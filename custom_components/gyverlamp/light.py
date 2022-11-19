@@ -117,7 +117,7 @@ class GyverLamp(LightEntity):
 
     @property
     def min_mireds(self):
-        return 0
+        return 1
 
     @property
     def device_info(self):
@@ -169,19 +169,13 @@ class GyverLamp(LightEntity):
 
         for data in payload:
             sock.sendto(data.encode(), self.address)
-            resp = sock.recv(1024)
-            self.debug(f"RESP {resp}")
 
         sock.close()
 
     def turn_off(self, **kwargs):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.settimeout(5)
-
         sock.sendto(b'P_OFF', self.address)
-        resp = sock.recv(1024)
-        self.debug(f"RESP {resp}")
-
         sock.close()
 
     def update(self):
