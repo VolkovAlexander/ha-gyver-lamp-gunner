@@ -69,13 +69,7 @@ class GyverLamp(LightEntity):
     def __init__(self, config: dict, unique_id=None):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
         self._unique_id = unique_id
-
         self.update_config(config)
-
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(5)
-
-
 
     @property
     def should_poll(self):
@@ -170,20 +164,33 @@ class GyverLamp(LightEntity):
 
         self.debug(f"SEND {payload}")
 
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.settimeout(5)
+
         for data in payload:
-            self.sock.sendto(data.encode(), self.address)
+            sock.sendto(data.encode(), self.address)
             resp = self.sock.recv(1024)
             self.debug(f"RESP {resp}")
 
+        sock.close()
+
     def turn_off(self, **kwargs):
-        self.sock.sendto(b'P_OFF', self.address)
-        resp = self.sock.recv(1024)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.settimeout(5)
+
+        sock.sendto(b'P_OFF', self.address)
+        resp = sock.recv(1024)
         self.debug(f"RESP {resp}")
+
+        sock.close()
 
     def update(self):
         try:
-            self.sock.sendto(b'GET', self.address)
-            data = self.sock.recv(1024).decode().split(' ')
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.settimeout(5)
+
+            sock.sendto(b'GET', self.address)
+            data = sock.recv(1024).decode().split(' ')
             self.debug(f"UPDATE {data}")
             # bri eff spd sca pow
             i = int(data[1])
@@ -192,6 +199,7 @@ class GyverLamp(LightEntity):
             self._color_temp = int(data[3])
             self._is_on = data[5] == '1'
             self._available = True
+            sock.close()
 
         except Exception as e:
             self.debug(f"Can't update: {e}")
