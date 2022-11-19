@@ -169,7 +169,7 @@ class GyverLamp(LightEntity):
 
         for data in payload:
             sock.sendto(data.encode(), self.address)
-            resp = self.sock.recv(1024)
+            resp = sock.recv(1024)
             self.debug(f"RESP {resp}")
 
         sock.close()
