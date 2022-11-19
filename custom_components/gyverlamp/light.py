@@ -4,7 +4,7 @@ import socket
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.light import PLATFORM_SCHEMA, LightEntity, \
-    SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_COLOR, SUPPORT_COLOR_TEMP, SUPPORT_WHITE_VALUE, \
+    SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_COLOR, SUPPORT_COLOR_TEMP, \
     ATTR_BRIGHTNESS, ATTR_EFFECT, ATTR_HS_COLOR
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
@@ -108,7 +108,7 @@ class GyverLamp(LightEntity):
 
     @property
     def supported_features(self):
-        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_COLOR | SUPPORT_COLOR_TEMP | SUPPORT_WHITE_VALUE
+        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_COLOR | SUPPORT_COLOR_TEMP
 
     @property
     def is_on(self):
