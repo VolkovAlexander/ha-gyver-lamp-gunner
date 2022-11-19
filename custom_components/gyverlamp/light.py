@@ -4,8 +4,8 @@ import socket
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.light import PLATFORM_SCHEMA, LightEntity, \
-    SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_FLASH, SUPPORT_TRANSITION, \
-    ATTR_BRIGHTNESS,    ATTR_EFFECT,    ATTR_FLASH,    ATTR_TRANSITION
+    SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_COLOR, SUPPORT_COLOR_TEMP, SUPPORT_WHITE_VALUE \
+    ATTR_BRIGHTNESS, ATTR_EFFECT, ATTR_HS_COLOR
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant
@@ -66,7 +66,7 @@ class GyverLamp(LightEntity):
     _effect = None
     _effects = None
     _host = None
-    # _hs_color = None
+    _hs_color = None
     _is_on = None
 
     def __init__(self, config: dict, unique_id=None):
@@ -94,9 +94,9 @@ class GyverLamp(LightEntity):
     def brightness(self):
         return self._brightness
 
-    # @property
-    # def hs_color(self):
-    #    return self._hs_color
+    @property
+    def hs_color(self):
+        return self._hs_color
 
     @property
     def effect_list(self):
@@ -108,7 +108,7 @@ class GyverLamp(LightEntity):
 
     @property
     def supported_features(self):
-        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_FLASH |  SUPPORT_TRANSITION
+        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_COLOR | SUPPORT_COLOR_TEMP | SUPPORT_WHITE_VALUE
 
     @property
     def is_on(self):
@@ -185,8 +185,8 @@ class GyverLamp(LightEntity):
             i = int(data[1])
             self._effect = self._effects[i] if i < len(self._effects) else None
             self._brightness = int(data[2])
-            # self._hs_color = (float(data[4]) / 100.0 * 360.0,
-            #                   float(data[3]) / 255.0 * 100.0)
+            self._hs_color = (float(data[4]) / 100.0 * 360.0,
+                              float(data[3]) / 255.0 * 100.0)
             self._is_on = data[5] == '1'
             self._available = True
 
