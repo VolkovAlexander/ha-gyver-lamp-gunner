@@ -4,8 +4,8 @@ import socket
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.light import PLATFORM_SCHEMA, LightEntity, \
-    SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_COLOR, ATTR_BRIGHTNESS, \
-    ATTR_EFFECT, ATTR_HS_COLOR
+    SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_FLASH, SUPPORT_TRANSITION, \
+    ATTR_BRIGHTNESS,    ATTR_EFFECT,    ATTR_FLASH,    ATTR_TRANSITION
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant
