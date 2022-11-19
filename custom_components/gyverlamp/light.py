@@ -119,6 +119,14 @@ class GyverLamp(LightEntity):
         return self._available
 
     @property
+    def max_mireds(self):
+        return 100
+
+    @property
+    def min_mireds(self):
+        return 0
+
+    @property
     def device_info(self):
         """
         https://developers.home-assistant.io/docs/device_registry_index/
@@ -154,12 +162,6 @@ class GyverLamp(LightEntity):
                 payload.append('EFF%d' % self._effects.index(effect))
             except ValueError:
                 payload.append(effect)
-
-        if ATTR_HS_COLOR in kwargs:
-            scale = round(kwargs[ATTR_HS_COLOR][0] / 360.0 * 100.0)
-            payload.append('SCA%d' % scale)
-            speed = kwargs[ATTR_HS_COLOR][1] / 100.0 * 255.0
-            payload.append('SPD%d' % speed)
 
         if not self.is_on:
             payload.append('P_ON')
