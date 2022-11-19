@@ -108,7 +108,7 @@ class GyverLamp(LightEntity):
 
     @property
     def supported_features(self):
-        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_COLOR
+        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_FLASH |  SUPPORT_TRANSITION
 
     @property
     def is_on(self):
