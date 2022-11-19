@@ -5,7 +5,7 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.light import PLATFORM_SCHEMA, LightEntity, \
     SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_COLOR, SUPPORT_COLOR_TEMP, \
-    ATTR_BRIGHTNESS, ATTR_EFFECT, ATTR_HS_COLOR
+    ATTR_BRIGHTNESS, ATTR_EFFECT, ATTR_HS_COLOR, ATTR_COLOR_TEMP
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant
@@ -66,7 +66,7 @@ class GyverLamp(LightEntity):
     _effect = None
     _effects = None
     _host = None
-    _hs_color = None
+    _color_temp = None
     _is_on = None
 
     def __init__(self, config: dict, unique_id=None):
@@ -95,8 +95,8 @@ class GyverLamp(LightEntity):
         return self._brightness
 
     @property
-    def hs_color(self):
-        return self._hs_color
+    def color_temp(self):
+        return self._color_temp
 
     @property
     def effect_list(self):
@@ -108,7 +108,7 @@ class GyverLamp(LightEntity):
 
     @property
     def supported_features(self):
-        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_COLOR | SUPPORT_COLOR_TEMP
+        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_COLOR_TEMP
 
     @property
     def is_on(self):
@@ -163,6 +163,10 @@ class GyverLamp(LightEntity):
             except ValueError:
                 payload.append(effect)
 
+        if ATTR_COLOR_TEMP in kwargs:
+            payload.append('SCA%d' % kwargs[ATTR_COLOR_TEMP])
+            payload.append('SPD%d' % kwargs[ATTR_COLOR_TEMP])
+
         if not self.is_on:
             payload.append('P_ON')
 
@@ -187,8 +191,7 @@ class GyverLamp(LightEntity):
             i = int(data[1])
             self._effect = self._effects[i] if i < len(self._effects) else None
             self._brightness = int(data[2])
-            self._hs_color = (float(data[4]) / 100.0 * 360.0,
-                              float(data[3]) / 255.0 * 100.0)
+            self._color_temp = int(data[3])
             self._is_on = data[5] == '1'
             self._available = True
 
