@@ -1,6 +1,6 @@
 {
   "domain": "gyverlamp",
-  "name": "GyverLamp",
+  "name": "GyverLampHA",
   "config_flow": true,
   "documentation": "https://github.com/VolkovAlexander/GyverLampHA",
   "issue_tracker": "https://github.com/VolkovAlexander/GyverLampHA/issues",

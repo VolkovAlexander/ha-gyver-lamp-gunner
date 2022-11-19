@@ -120,7 +120,7 @@ class GyverLamp(LightEntity):
 
     @property
     def max_mireds(self):
-        return 100
+        return 255
 
     @property
     def min_mireds(self):
