@@ -68,7 +68,7 @@ class GyverLamp(LightEntity):
 
     def __init__(self, config: dict, unique_id=None):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
-        self._unique_id = unique_id
+        self._unique_id = config[CONF_HOST] + "_gvr_lmp"
         self.update_config(config)
 
     @property
