@@ -192,6 +192,7 @@ class GyverLamp(LightEntity):
                     data = data.split(";")
                     for part in data:
                         if ". " in data:
+                            self.debug(part)
                             tmp = part.split(". ")
                             self.debug(tmp)
                             if len(tmp) > 1:
