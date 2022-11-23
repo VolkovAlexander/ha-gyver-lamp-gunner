@@ -192,9 +192,10 @@ class GyverLamp(LightEntity):
                 if data != None and ';' in data:
                     data = data.split(';')
                     for part in data:
-                        tmp = part.split('. ')[1]
-                        tmp = tmp.split(',')[0]
-                        effects.append(tmp)
+                        if '. ' in data:
+                            tmp = part.split('. ')[1]
+                            tmp = tmp.split(',')[0]
+                            effects.append(tmp)
 
             self._effects = effects
 
