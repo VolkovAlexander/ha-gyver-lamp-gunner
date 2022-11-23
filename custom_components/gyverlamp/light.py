@@ -35,7 +35,8 @@ EFFECTS = ["Бeлый cвeт", "Цвeт", "Cмeнa цвeтa", "Бeзyмиe", "O�
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
-    vol.Optional(CONF_NAME): cv.string
+    vol.Optional(CONF_NAME): cv.string,
+    vol.Optional(CONF_EFFECTS): cv.ensure_list
 })
 
 
