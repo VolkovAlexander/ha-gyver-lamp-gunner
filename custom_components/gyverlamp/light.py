@@ -138,7 +138,6 @@ class GyverLamp(LightEntity):
         _LOGGER.debug(f"{self._host} | {message}")
 
     def update_config(self, config: dict):
-        self._effects = config.get(CONF_EFFECTS, EFFECTS)
         self._host = config[CONF_HOST]
 
         if self.hass:
