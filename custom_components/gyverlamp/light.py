@@ -189,13 +189,16 @@ class GyverLamp(LightEntity):
                 sock.sendto(req.encode(), self.address)
                 data = sock.recv(2048).decode()
                 self.debug(data)
-                if data != None and ';' in data:
-                    data = data.split(';')
+                if data != None and ";" in data:
+                    data = data.split(";")
                     for part in data:
-                        if '. ' in data:
-                            tmp = part.split('. ')[1]
-                            tmp = tmp.split(',')[0]
-                            effects.append(tmp)
+                        if ". " in data:
+                            tmp = part.split('. ')
+                            if len(tmp) > 1:
+                                tmp = tmp[1]
+                                if "," in tmp:
+                                    tmp = tmp.split(',')[0]
+                                    effects.append(tmp)
 
             self._effects = effects
 
