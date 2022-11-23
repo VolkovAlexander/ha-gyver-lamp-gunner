@@ -185,9 +185,10 @@ class GyverLamp(LightEntity):
 
             effects = []
             for i in range(1, 5):
-                sock.sendto(b'LIST %d' & i, self.address)
+                req = "LIST %d"%i
+                sock.sendto(req.encode(), self.address)
                 data = sock.recv(2048).decode()
-                self.debug(f"LIST {data}")
+                self.debug(data)
                 if data != None and ';' in data:
                     data = data.split(';')
                     for part in data:
