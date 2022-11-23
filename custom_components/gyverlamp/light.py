@@ -135,7 +135,7 @@ class GyverLamp(LightEntity):
         return self._host, 8888
 
     def debug(self, message):
-        _LOGGER.debug(f"{self._host} | {message}")
+        _LOGGER.error(f"{self._host} | {message}")
 
     def update_config(self, config: dict):
         self._effects = config.get(CONF_EFFECTS, EFFECTS)
@@ -187,6 +187,7 @@ class GyverLamp(LightEntity):
             for i in range(1, 5):
                 sock.sendto(b'LIST %d' & i, self.address)
                 data = sock.recv(2048).decode()
+                self.debug(f"LIST {data}")
                 if data != None and ';' in data:
                     data = data.split(';')
                     for part in data:
