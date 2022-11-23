@@ -50,6 +50,8 @@ class GyverLamp(LightEntity):
     _host = None
     _color_temp = None
     _is_on = None
+    _max_mireds = 225
+    _min_mireds = 1
 
     def __init__(self, config: dict, unique_id=None):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
@@ -98,11 +100,11 @@ class GyverLamp(LightEntity):
 
     @property
     def max_mireds(self):
-        return 255
+        return int(self._max_mireds)
 
     @property
     def min_mireds(self):
-        return 1
+        return int(self._min_mireds)
 
     @property
     def device_info(self):
@@ -125,6 +127,8 @@ class GyverLamp(LightEntity):
     def update_config(self, config: dict):
         self._effects = config.get(CONF_EFFECTS, EFFECTS)
         self._host = config[CONF_HOST]
+        self._min_mireds = 1
+        self._max_mireds = 255
 
         if self.hass:
             self._async_write_ha_state()
