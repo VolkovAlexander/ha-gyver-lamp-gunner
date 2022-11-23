@@ -142,12 +142,12 @@ class GyverLamp(LightEntity):
                 payload.append(effect)
 
         if ATTR_COLOR_TEMP in kwargs:
-            self.debug(kwargs[ATTR_COLOR_TEMP])
             payload.append('SPD%d' % kwargs[ATTR_COLOR_TEMP])
 
         if not self.is_on:
             payload.append('P_ON')
 
+        self.debug(kwargs)
         self.debug(f"SEND {payload}")
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
