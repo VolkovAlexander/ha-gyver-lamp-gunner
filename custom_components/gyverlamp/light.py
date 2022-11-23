@@ -185,7 +185,7 @@ class GyverLamp(LightEntity):
 
             effects = []
             for i in range(1, 5):
-                req = "LIST %d"%i
+                req = "LIST " + str(i)
                 sock.sendto(req.encode(), self.address)
                 data = sock.recv(2048).decode()
                 self.debug(data)
