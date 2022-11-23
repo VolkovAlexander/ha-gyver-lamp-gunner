@@ -198,6 +198,7 @@ class GyverLamp(LightEntity):
                                 tmp = tmp[1]
                                 if "," in tmp:
                                     tmp = tmp.split(',')[0]
+                                    self.debug(tmp)
                                     effects.append(tmp)
 
             self._effects = effects
