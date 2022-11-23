@@ -183,6 +183,19 @@ class GyverLamp(LightEntity):
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.settimeout(5)
 
+            effects = []
+            for i in range(1, 5):
+                sock.sendto(b'LIST %d' & i, self.address)
+                data = sock.recv(2048).decode()
+                if data != None and ';' in data:
+                    data = data.split(';')
+                    for part in data:
+                        tmp = part.split('. ')[1]
+                        tmp = tmp.split(',')[0]
+                        effects.append(tmp)
+
+            self._effects = effects
+
             sock.sendto(b'GET', self.address)
             data = sock.recv(1024).decode().split(' ')
             self.debug(f"UPDATE {data}")
