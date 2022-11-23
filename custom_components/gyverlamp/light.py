@@ -35,8 +35,7 @@ EFFECTS = ["Бeлый cвeт", "Цвeт", "Cмeнa цвeтa", "Бeзyмиe", "O�
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
-    vol.Optional(CONF_NAME): cv.string,
-    vol.Optional(CONF_EFFECTS): cv.ensure_list
+    vol.Optional(CONF_NAME): cv.string
 })
 
 
@@ -138,6 +137,7 @@ class GyverLamp(LightEntity):
         _LOGGER.debug(f"{self._host} | {message}")
 
     def update_config(self, config: dict):
+        self._effects = config.get(CONF_EFFECTS, EFFECTS)
         self._host = config[CONF_HOST]
 
         if self.hass:
