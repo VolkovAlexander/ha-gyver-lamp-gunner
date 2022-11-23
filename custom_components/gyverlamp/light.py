@@ -190,10 +190,10 @@ class GyverLamp(LightEntity):
                 data = sock.recv(2048).decode('utf-8')
                 if data != None and ";" in data:
                     data = data.split(";")
-                    self.debug(data)
                     for part in data:
                         if ". " in data:
-                            tmp = part.split('. ')
+                            tmp = part.split(". ")
+                            self.debug(tmp)
                             if len(tmp) > 1:
                                 tmp = tmp[1]
                                 if "," in tmp:
