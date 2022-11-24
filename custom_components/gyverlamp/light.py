@@ -48,13 +48,14 @@ def getSocketData(address, request):
     sock.sendto(request.encode(), address)
 
     data = b''
-    while True:
-        part = sock.recv(BUFF_SIZE)
-        data += part
-        if len(part) < BUFF_SIZE:
-            break
-
-    sock.close()
+    try:
+        while True:
+            part = sock.recv(BUFF_SIZE)
+            data += part
+            if len(part) < BUFF_SIZE:
+                break
+    finally:
+        sock.close()
 
     return data.decode('utf-8')
 
