@@ -76,6 +76,7 @@ def loadLampParams(address):
         data = data.split(' ')
 
     sock.close()
+
     return data
 
 
