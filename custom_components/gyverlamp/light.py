@@ -190,7 +190,7 @@ class GyverLamp(LightEntity):
             self._effects = effects
 
             self.sock.sendto(b'GET', self.address)
-            data = sock.recv(1024).decode().split(' ')
+            data = self.sock.recv(1024).decode().split(' ')
             self.debug(f"UPDATE {data}")
             # bri eff spd sca pow
             i = int(data[1])
