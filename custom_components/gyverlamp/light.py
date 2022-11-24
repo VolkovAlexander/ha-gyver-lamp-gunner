@@ -41,13 +41,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 def recvall(sock):
-    BUFF_SIZE = 512 # 4 KiB
+    BUFF_SIZE = 5
     data = b''
     while True:
         part = sock.recv(BUFF_SIZE)
         data += part
         if len(part) < BUFF_SIZE:
-            # either 0 or end of data
             break
 
     return data
@@ -57,7 +56,7 @@ def loadEffects(address):
     sock.settimeout(5)
 
     effects = []
-    for i in range(1, 5):
+    for i in range(1, 3):
         req = "LIST " + str(i)
         sock.sendto(req.encode(), address)
         data = recvall(sock).decode('utf-8')
