@@ -40,6 +40,18 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN].pop(entry.entry_id)
     return True
 
+def recvall(sock):
+    BUFF_SIZE = 512 # 4 KiB
+    data = b''
+    while True:
+        part = sock.recv(BUFF_SIZE)
+        data += part
+        if len(part) < BUFF_SIZE:
+            # either 0 or end of data
+            break
+
+    return data
+
 async def loadEffects(address):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
@@ -48,7 +60,7 @@ async def loadEffects(address):
     for i in range(1, 5):
         req = "LIST " + str(i)
         sock.sendto(req.encode(), address)
-        data = sock.recv(4096).decode('utf-8')
+        data = recvall(sock).decode('utf-8')
 
         if data != None and ';' in data:
           data = data.split(';')
@@ -70,7 +82,7 @@ async def loadUdpParams(address):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
     sock.sendto(b'GET', address)
-    data = sock.recv(2048).decode()
+    data = recvall(sock).decode()
 
     if u"CURR" in data:
         data = data.split(' ')
