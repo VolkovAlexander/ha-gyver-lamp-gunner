@@ -64,7 +64,7 @@ def loadEffects(address):
     sock.close()
     return effects
 
-def loadStates()
+def loadStates():
     data = []
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
@@ -75,8 +75,8 @@ def loadStates()
 
     if u"CURR" in data:
         data = data.split(' ')
-
     sock.close()
+
     return data
 
 
