@@ -40,26 +40,30 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN].pop(entry.entry_id)
     return True
 
-def recvall(sock):
+def getSocketData(address, request):
     BUFF_SIZE = 1024
-    data = b''
-    while True:
-        part = sock.recv(BUFF_SIZE)
-        data += part
-        if len(part) < BUFF_SIZE:
-            break
 
-    return data
-
-def loadEffects(address):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
+    sock.sendto(request.encode(), address)
 
+    data = b''
+    try:
+
+        while True:
+            part = sock.recv(BUFF_SIZE)
+            data += part
+            if len(part) < BUFF_SIZE:
+                break
+    sock.close()
+
+    return data.decode('utf-8')
+
+def loadEffects(address):
     effects = []
     for i in range(1, 3):
         req = "LIST " + str(i)
-        sock.sendto(req.encode(), address)
-        data = recvall(sock).decode('utf-8')
+        data = getSocketData(self.address, req)
 
         if data != None and ';' in data:
           data = data.split(';')
@@ -72,21 +76,14 @@ def loadEffects(address):
                   tmp = tmp.split(',')[0]
                   effects.append(tmp)
 
-    sock.close()
     return effects
 
 def loadUdpParams(address):
     data = []
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.settimeout(5)
-    sock.sendto(b'GET', address)
-    data = recvall(sock).decode()
-
+    data = getSocketData(address, "GET")
     if u"CURR" in data:
         data = data.split(' ')
-
-    sock.close()
 
     return data
 
@@ -189,9 +186,6 @@ class GyverLamp(LightEntity):
             self._async_write_ha_state()
 
     def turn_on(self, **kwargs):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.settimeout(5)
-
         payload = []
         if ATTR_BRIGHTNESS in kwargs:
             payload.append('BRI %d' % kwargs[ATTR_BRIGHTNESS])
@@ -213,15 +207,10 @@ class GyverLamp(LightEntity):
         self.debug(f"SEND {payload}")
 
         for data in payload:
-            sock.sendto(data.encode(), self.address)
-
-        sock.close()
+            getSocketData(self.address, data)
 
     def turn_off(self, **kwargs):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.settimeout(5)
-        self.sock.sendto(b'P_OFF', self.address)
-        sock.close()
+        getSocketData(self.address, "P_OFF")
 
     def update(self):
         try:
