@@ -52,7 +52,7 @@ def recvall(sock):
 
     return data
 
-async def loadEffects(address):
+def loadEffects(address):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
 
@@ -76,7 +76,7 @@ async def loadEffects(address):
     sock.close()
     return effects
 
-async def loadUdpParams(address):
+def loadUdpParams(address):
     data = []
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
