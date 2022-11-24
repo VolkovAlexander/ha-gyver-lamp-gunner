@@ -43,6 +43,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 class GyverLamp(LightEntity):
+    sock = None
+
     _available = False
     _brightness = None
     _effect = None
@@ -55,6 +57,9 @@ class GyverLamp(LightEntity):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
         self._unique_id = config[CONF_HOST] + "_gvr_lmp"
         self.update_config(config)
+
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.settimeout(5)
 
     @property
     def should_poll(self):
@@ -133,8 +138,6 @@ class GyverLamp(LightEntity):
     def update_config(self, config: dict):
         self._effects = config.get(CONF_EFFECTS, EFFECTS)
         self._host = config[CONF_HOST]
-        self._min_mireds = 1
-        self._max_mireds = 255
 
         if self.hass:
             self._async_write_ha_state()
@@ -160,30 +163,19 @@ class GyverLamp(LightEntity):
         self.debug(kwargs)
         self.debug(f"SEND {payload}")
 
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.settimeout(5)
-
         for data in payload:
-            sock.sendto(data.encode(), self.address)
-
-        sock.close()
+            self.sock.sendto(data.encode(), self.address)
 
     def turn_off(self, **kwargs):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.settimeout(5)
-        sock.sendto(b'P_OFF', self.address)
-        sock.close()
+        self.sock.sendto(b'P_OFF', self.address)
 
     def update(self):
         try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            sock.settimeout(5)
-
             effects = []
             for i in range(1, 5):
                 req = "LIST " + str(i)
-                sock.sendto(req.encode(), self.address)
-                data = sock.recv(2048).decode('utf-8')
+                self.sock.sendto(req.encode(), self.address)
+                data = sock.recv(1024).decode('utf-8')
                 if data != None and ';' in data:
                   data = data.split(';')
                   for part in data:
@@ -197,7 +189,7 @@ class GyverLamp(LightEntity):
 
             self._effects = effects
 
-            sock.sendto(b'GET', self.address)
+            self.sock.sendto(b'GET', self.address)
             data = sock.recv(1024).decode().split(' ')
             self.debug(f"UPDATE {data}")
             # bri eff spd sca pow
@@ -207,7 +199,6 @@ class GyverLamp(LightEntity):
             self._color_temp = int(data[3])
             self._is_on = data[5] == '1'
             self._available = True
-            sock.close()
 
         except Exception as e:
             self.debug(f"Can't update: {e}")
