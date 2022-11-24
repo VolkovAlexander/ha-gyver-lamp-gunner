@@ -29,8 +29,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     add_entities([GyverLamp(config)], True)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
-                            async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     entity = GyverLamp(entry.options, entry.entry_id)
     async_add_entities([entity], True)
 
@@ -40,6 +39,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN].pop(entry.entry_id)
     return True
+
+def loadEffects(sock, address):
+    effects = []
+    for i in range(1, 5):
+        req = "LIST " + str(i)
+        sock.sendto(req.encode(), address)
+        data = sock.recv(2048).decode('utf-8')
+
+        if data != None and ';' in data:
+          data = data.split(';')
+          for part in data:
+            if part.find(u". ") > -1:
+              tmp = part.split('. ')
+              if len(tmp) > 1:
+                tmp = tmp[1]
+                if tmp.find(u",") > -1:
+                  tmp = tmp.split(',')[0]
+                  effects.append(tmp)
+
+    return effects
 
 
 class GyverLamp(LightEntity):
@@ -59,6 +78,8 @@ class GyverLamp(LightEntity):
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(5)
+
+        self._effects = loadEffects(self.sock, self._host)
 
     @property
     def should_poll(self):
@@ -170,25 +191,6 @@ class GyverLamp(LightEntity):
 
     def update(self):
         try:
-            effects = []
-            for i in range(1, 5):
-                req = "LIST " + str(i)
-                self.sock.sendto(req.encode(), self.address)
-                data = self.sock.recv(1024).decode('utf-8')
-
-                if data != None and ';' in data:
-                  data = data.split(';')
-                  for part in data:
-                    if part.find(u". ") > -1:
-                      tmp = part.split('. ')
-                      if len(tmp) > 1:
-                        tmp = tmp[1]
-                        if tmp.find(u",") > -1:
-                          tmp = tmp.split(',')[0]
-                          effects.append(tmp)
-
-            self._effects = effects
-
             self.sock.sendto(b'GET', self.address)
             data = self.sock.recv(1024).decode().split(' ')
 
