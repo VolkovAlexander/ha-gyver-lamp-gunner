@@ -43,8 +43,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 class GyverLamp(LightEntity):
-    sock = None
-
     _available = False
     _brightness = None
     _effect = None
