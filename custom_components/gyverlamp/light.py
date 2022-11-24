@@ -40,7 +40,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN].pop(entry.entry_id)
     return True
 
-def loadEffects(sock, address):
+def loadEffects(address):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(5)
+
     effects = []
     for i in range(1, 5):
         req = "LIST " + str(i)
@@ -58,7 +61,23 @@ def loadEffects(sock, address):
                   tmp = tmp.split(',')[0]
                   effects.append(tmp)
 
+    sock.close()
     return effects
+
+def loadStates()
+    data = []
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(5)
+
+    self.sock.sendto(b'GET', self.address)
+    data = self.sock.recv(2048).decode()
+    self.debug(f"UPDATE {data}")
+
+    if u"CURR" in data:
+        data = data.split(' ')
+
+    sock.close()
+    return data
 
 
 class GyverLamp(LightEntity):
@@ -75,9 +94,6 @@ class GyverLamp(LightEntity):
         self._unique_id = config[CONF_HOST] + "_gvr_lmp"
 
         self.update_config(config)
-
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(5)
 
     @property
     def should_poll(self):
@@ -101,7 +117,7 @@ class GyverLamp(LightEntity):
 
     @property
     def effect_list(self):
-        self._effects = loadEffects(self.sock, self.address)
+        self._effects = loadEffects(self.address)
         return self._effects
 
     @property
@@ -162,6 +178,9 @@ class GyverLamp(LightEntity):
             self._async_write_ha_state()
 
     def turn_on(self, **kwargs):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.settimeout(5)
+
         payload = []
         if ATTR_BRIGHTNESS in kwargs:
             payload.append('BRI %d' % kwargs[ATTR_BRIGHTNESS])
@@ -183,19 +202,20 @@ class GyverLamp(LightEntity):
         self.debug(f"SEND {payload}")
 
         for data in payload:
-            self.sock.sendto(data.encode(), self.address)
+            sock.sendto(data.encode(), self.address)
+
+        sock.close()
 
     def turn_off(self, **kwargs):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.settimeout(5)
         self.sock.sendto(b'P_OFF', self.address)
+        sock.close()
 
     def update(self):
         try:
-            self.sock.sendto(b'GET', self.address)
-            data = self.sock.recv(2048).decode()
-            self.debug(f"UPDATE {data}")
-
-            if u"CURR" in data:
-                data = data.split(' ')
+            data = loadStates(self.address)
+            if len(data) >= 5:
                 # bri eff spd sca pow
                 i = int(data[1])
                 self._effect = self._effects[i] if i < len(self._effects) else None
