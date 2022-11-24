@@ -61,7 +61,7 @@ def loadEffects(address):
     effects = []
     for i in range(1, 3):
         req = "LIST " + str(i)
-        data = getSocketData(self.address, req)
+        data = getSocketData(address, req)
 
         if data != None and ';' in data:
           data = data.split(';')
