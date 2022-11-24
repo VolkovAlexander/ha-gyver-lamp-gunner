@@ -47,15 +47,12 @@ def getSocketData(address, request):
     sock.settimeout(5)
     sock.sendto(request.encode(), address)
 
-    data = b''
-    while True:
-        part = sock.recv(BUFF_SIZE)
-        data += part
-        if len(part) < BUFF_SIZE:
-            break
+    _LOGGER.error(f"SENT TO {address}: {request}")
+    data = sock.recv(4096).decode('utf-8')
+    _LOGGER.error(f"RECEIVED: {data}")
 
     sock.close()
-    return data.decode('utf-8')
+    return data
 
 def loadEffects(address):
     effects = []
