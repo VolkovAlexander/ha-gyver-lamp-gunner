@@ -41,22 +41,20 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 def getSocketData(address, request):
-    BUFF_SIZE = 1024
+    BUFF_SIZE = 1
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
     sock.sendto(request.encode(), address)
 
     data = b''
-    try:
-        while True:
-            part = sock.recv(BUFF_SIZE)
-            data += part
-            if len(part) < BUFF_SIZE:
-                break
-    finally:
-        sock.close()
+    while True:
+        part = sock.recv(BUFF_SIZE)
+        data += part
+        if len(part) < BUFF_SIZE:
+            break
 
+    sock.close()
     return data.decode('utf-8')
 
 def loadEffects(address):
