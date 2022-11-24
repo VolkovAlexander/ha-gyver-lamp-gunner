@@ -5,7 +5,7 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.light import PLATFORM_SCHEMA, LightEntity, \
     SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_COLOR, SUPPORT_COLOR_TEMP, \
-    ATTR_BRIGHTNESS, ATTR_EFFECT, ATTR_HS_COLOR, ATTR_COLOR_TEMP
+    ATTR_BRIGHTNESS, ATTR_EFFECT, ATTR_HS_COLOR, ATTR_COLOR_TEMP, ATTR_COLOR_TEMP_KELVIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant
@@ -16,7 +16,7 @@ _LOGGER = logging.getLogger(__name__)
 
 CONF_EFFECTS = 'effects'
 
-EFFECTS = []
+EFFECTS = ['Белый свет', 'Цает', 'Смена цвета']
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
@@ -50,8 +50,6 @@ class GyverLamp(LightEntity):
     _host = None
     _color_temp = None
     _is_on = None
-    _max_mireds = 225
-    _min_mireds = 1
 
     def __init__(self, config: dict, unique_id=None):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
@@ -100,11 +98,19 @@ class GyverLamp(LightEntity):
 
     @property
     def max_mireds(self):
-        return int(self._max_mireds)
+        return 255
 
     @property
     def min_mireds(self):
-        return int(self._min_mireds)
+        return 1
+
+    @property
+    def max_color_temp_kelvin(self):
+        return 255
+
+    @property
+    def min_color_temp_kelvin(self):
+        return 1
 
     @property
     def device_info(self):
@@ -136,17 +142,17 @@ class GyverLamp(LightEntity):
     def turn_on(self, **kwargs):
         payload = []
         if ATTR_BRIGHTNESS in kwargs:
-            payload.append('BRI%d' % kwargs[ATTR_BRIGHTNESS])
+            payload.append('BRI %d' % kwargs[ATTR_BRIGHTNESS])
 
         if ATTR_EFFECT in kwargs:
             effect = kwargs[ATTR_EFFECT]
             try:
-                payload.append('EFF%d' % self._effects.index(effect))
+                payload.append('EFF %d' % self._effects.index(effect))
             except ValueError:
                 payload.append(effect)
 
-        if ATTR_COLOR_TEMP in kwargs:
-            payload.append('SPD%d' % kwargs[ATTR_COLOR_TEMP])
+        if ATTR_COLOR_TEMP_KELVIN in kwargs:
+            payload.append('SPD %d' % kwargs[ATTR_COLOR_TEMP])
 
         if not self.is_on:
             payload.append('P_ON')
