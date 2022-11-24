@@ -47,9 +47,8 @@ def getSocketData(address, request):
     sock.settimeout(5)
     sock.sendto(request.encode(), address)
 
-    _LOGGER.error(f"SENT TO {address}: {request}")
     data = sock.recv(4096).decode('utf-8')
-    _LOGGER.error(f"RECEIVED: {data}")
+    _LOGGER.error(f"SEND: {request}, RECEIVED: {data}")
 
     sock.close()
     return data
