@@ -119,7 +119,6 @@ class GyverLamp(LightEntity):
 
     @property
     def effect_list(self):
-        self._effects = loadEffects(self.address)
         return self._effects
 
     @property
@@ -173,8 +172,8 @@ class GyverLamp(LightEntity):
         _LOGGER.error(f"{self._host} | {message}")
 
     def update_config(self, config: dict):
-        self._effects = config.get(CONF_EFFECTS, EFFECTS)
         self._host = config[CONF_HOST]
+        self._effects = loadEffects(self.address)
 
         if self.hass:
             self._async_write_ha_state()
