@@ -129,7 +129,7 @@ class GyverLamp(LightEntity):
 
     @property
     def effect_list(self):
-        await self._effects = loadEffects(self.address)
+        self._effects = loadEffects(self.address)
         return self._effects
 
     @property
@@ -226,7 +226,7 @@ class GyverLamp(LightEntity):
 
     def update(self):
         try:
-            data = await loadUdpParams(self.address)
+            data = loadUdpParams(self.address)
             if len(data) >= 5:
                 # bri eff spd sca pow
                 i = int(data[1])
