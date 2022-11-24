@@ -41,7 +41,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 def recvall(sock):
-    BUFF_SIZE = 5
+    BUFF_SIZE = 1024
     data = b''
     while True:
         part = sock.recv(BUFF_SIZE)
