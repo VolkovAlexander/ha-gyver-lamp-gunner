@@ -79,8 +79,6 @@ class GyverLamp(LightEntity):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(5)
 
-        self._effects = loadEffects(self.sock, self.address)
-
     @property
     def should_poll(self):
         return True
@@ -103,6 +101,7 @@ class GyverLamp(LightEntity):
 
     @property
     def effect_list(self):
+        self._effects = loadEffects(self.sock, self.address)
         return self._effects
 
     @property
