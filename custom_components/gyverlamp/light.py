@@ -40,7 +40,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN].pop(entry.entry_id)
     return True
 
-def loadEffects(address):
+async def loadEffects(address):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
 
@@ -64,7 +64,7 @@ def loadEffects(address):
     sock.close()
     return effects
 
-def loadUdpParams(address):
+async def loadUdpParams(address):
     data = []
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -117,7 +117,7 @@ class GyverLamp(LightEntity):
 
     @property
     def effect_list(self):
-        self._effects = loadEffects(self.address)
+        await self._effects = loadEffects(self.address)
         return self._effects
 
     @property
@@ -214,7 +214,7 @@ class GyverLamp(LightEntity):
 
     def update(self):
         try:
-            data = loadUdpParams(self.address)
+            data = await loadUdpParams(self.address)
             if len(data) >= 5:
                 # bri eff spd sca pow
                 i = int(data[1])
