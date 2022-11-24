@@ -66,17 +66,16 @@ def loadEffects(address):
 
 def loadLampParams(address):
     data = []
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
-
-    self.sock.sendto(b'GET', address)
-    data = self.sock.recv(2048).decode()
-    self.debug(f"UPDATE {data}")
+    sock.sendto(b'GET', address)
+    data = sock.recv(2048).decode()
 
     if u"CURR" in data:
         data = data.split(' ')
-    sock.close()
 
+    sock.close()
     return data
 
 
