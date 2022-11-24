@@ -192,16 +192,18 @@ class GyverLamp(LightEntity):
     def update(self):
         try:
             self.sock.sendto(b'GET', self.address)
-            data = self.sock.recv(1024).decode().split(' ')
+            data = self.sock.recv(1024).decode()
 
-            self.debug(f"UPDATE {data}")
-            # bri eff spd sca pow
-            i = int(data[1])
-            self._effect = self._effects[i] if i < len(self._effects) else None
-            self._brightness = int(data[2])
-            self._color_temp = int(data[3])
-            self._is_on = data[5] == '1'
-            self._available = True
+            if u"CURR" in data:
+                data = data.split(' ')
+                self.debug(f"UPDATE {data}")
+                # bri eff spd sca pow
+                i = int(data[1])
+                self._effect = self._effects[i] if i < len(self._effects) else None
+                self._brightness = int(data[2])
+                self._color_temp = int(data[3])
+                self._is_on = data[5] == '1'
+                self._available = True
 
         except Exception as e:
             self.debug(f"Can't update: {e}")
