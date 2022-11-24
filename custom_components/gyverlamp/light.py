@@ -64,7 +64,7 @@ def loadEffects(address):
     sock.close()
     return effects
 
-def loadStates(address):
+def loadLampParams(address):
     data = []
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(5)
@@ -214,7 +214,7 @@ class GyverLamp(LightEntity):
 
     def update(self):
         try:
-            data = loadStates(self.address)
+            data = loadLampParams(self.address)
             if len(data) >= 5:
                 # bri eff spd sca pow
                 i = int(data[1])
