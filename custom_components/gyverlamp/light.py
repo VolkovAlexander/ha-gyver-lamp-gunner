@@ -53,9 +53,6 @@ class GyverLamp(LightEntity):
     _color_temp = None
     _is_on = None
 
-    self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    self.sock.settimeout(5)
-
     def __init__(self, config: dict, unique_id=None):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
         self._unique_id = config[CONF_HOST] + "_gvr_lmp"
