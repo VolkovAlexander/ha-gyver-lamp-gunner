@@ -180,8 +180,6 @@ class GyverLamp(LightEntity):
 
     def turn_on(self, **kwargs):
         payload = []
-        if ATTR_BRIGHTNESS in kwargs:
-            payload.append('BRI %d' % kwargs[ATTR_BRIGHTNESS])
 
         if ATTR_EFFECT in kwargs:
             effect = kwargs[ATTR_EFFECT]
@@ -189,6 +187,9 @@ class GyverLamp(LightEntity):
                 payload.append('EFF %d' % self._effects.index(effect))
             except ValueError:
                 payload.append(effect)
+
+        if ATTR_BRIGHTNESS in kwargs:
+            payload.append('BRI %d' % kwargs[ATTR_BRIGHTNESS])
 
         if ATTR_COLOR_TEMP_KELVIN in kwargs:
             payload.append('SPD %d' % kwargs[ATTR_COLOR_TEMP])
