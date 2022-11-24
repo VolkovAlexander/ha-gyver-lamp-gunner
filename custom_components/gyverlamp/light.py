@@ -45,7 +45,7 @@ def loadEffects(sock, address):
     for i in range(1, 5):
         req = "LIST " + str(i)
         sock.sendto(req.encode(), address)
-        data = sock.recv(2048).decode('utf-8')
+        data = sock.recv(4096).decode('utf-8')
 
         if data != None and ';' in data:
           data = data.split(';')
@@ -191,11 +191,11 @@ class GyverLamp(LightEntity):
     def update(self):
         try:
             self.sock.sendto(b'GET', self.address)
-            data = self.sock.recv(1024).decode()
+            data = self.sock.recv(2048).decode()
+            self.debug(f"UPDATE {data}")
 
             if u"CURR" in data:
                 data = data.split(' ')
-                self.debug(f"UPDATE {data}")
                 # bri eff spd sca pow
                 i = int(data[1])
                 self._effect = self._effects[i] if i < len(self._effects) else None
