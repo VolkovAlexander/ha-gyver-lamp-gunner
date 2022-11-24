@@ -53,9 +53,13 @@ class GyverLamp(LightEntity):
     _color_temp = None
     _is_on = None
 
+    self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    self.sock.settimeout(5)
+
     def __init__(self, config: dict, unique_id=None):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
         self._unique_id = config[CONF_HOST] + "_gvr_lmp"
+
         self.update_config(config)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -176,6 +180,7 @@ class GyverLamp(LightEntity):
                 req = "LIST " + str(i)
                 self.sock.sendto(req.encode(), self.address)
                 data = self.sock.recv(1024).decode('utf-8')
+
                 if data != None and ';' in data:
                   data = data.split(';')
                   for part in data:
@@ -191,6 +196,7 @@ class GyverLamp(LightEntity):
 
             self.sock.sendto(b'GET', self.address)
             data = self.sock.recv(1024).decode().split(' ')
+
             self.debug(f"UPDATE {data}")
             # bri eff spd sca pow
             i = int(data[1])
