@@ -56,7 +56,7 @@ def getSocketData(address, request):
 
 def loadEffects(address):
     effects = []
-    for i in range(1, 3):
+    for i in range(1, 5):
         req = "LIST " + str(i)
         data = getSocketData(address, req)
 
