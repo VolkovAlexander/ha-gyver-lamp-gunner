@@ -26,11 +26,11 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
-    add_entities([GyverLamp(config)], True)
+    add_entities([GyverLampGunner(config)], True)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    entity = GyverLamp(entry.options, entry.entry_id)
+    entity = GyverLampGunner(entry.options, entry.entry_id)
     async_add_entities([entity], True)
 
     hass.data[DOMAIN][entry.entry_id] = entity
@@ -82,7 +82,7 @@ def loadUdpParams(address):
     return data
 
 
-class GyverLamp(LightEntity):
+class GyverLampGunner(LightEntity):
     _available = False
     _brightness = None
     _effect = None
@@ -161,7 +161,7 @@ class GyverLamp(LightEntity):
         return {
             'identifiers': {(DOMAIN, self._unique_id)},
             'manufacturer': "@AlexGyver",
-            'model': "GyverLamp"
+            'model': "GyverLampGunner"
         }
 
     @property
