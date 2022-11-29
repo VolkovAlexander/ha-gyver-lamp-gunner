@@ -130,7 +130,7 @@ class GyverLampGunner(LightEntity):
 
     @property
     def rgb_color(self) -> tuple:
-        return self._r_color, self._g_color, self._b_color
+        return (self._r_color, self._g_color, self._b_color)
 
     @property
     def address(self) -> tuple:
