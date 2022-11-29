@@ -7,6 +7,6 @@
   "codeowners": [ "@volandkb"],
   "dependencies": [],
   "requirements": [],
-  "version": "2.0.1",
+  "version": "2.0.2",
   "iot_class": "local_polling"
 }

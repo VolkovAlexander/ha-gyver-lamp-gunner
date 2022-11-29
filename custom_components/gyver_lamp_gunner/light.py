@@ -115,6 +115,10 @@ class GyverLampGunner(LightEntity):
         return SUPPORT_EFFECT
 
     @property
+    def color_mode(self):
+        return ColorMode.RGB
+
+    @property
     def supported_color_modes(self):
         return [ColorMode.ONOFF, ColorMode.BRIGHTNESS, ColorMode.RGB]
 
