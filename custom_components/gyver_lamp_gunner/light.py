@@ -79,9 +79,7 @@ class GyverLampGunner(LightEntity):
     _effects = None
     _host = None
     _is_on = None
-    _r_color = None
-    _g_color = None
-    _b_color = None
+    _rgb_color = None
 
     def __init__(self, config: dict, unique_id=None):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
@@ -130,7 +128,7 @@ class GyverLampGunner(LightEntity):
 
     @property
     def rgb_color(self) -> tuple:
-        return (self._r_color, self._g_color, self._b_color)
+        return self._rgb_color
 
     @property
     def address(self) -> tuple:
@@ -185,11 +183,9 @@ class GyverLampGunner(LightEntity):
                 i = int(data[1])
                 self._effect = self._effects[i] if i < len(self._effects) else None
                 self._brightness = int(data[2])
-                self._r_color = int(data[3])
-                self._g_color = int(data[4])
+                self._rgb_color = (int(data[3]), int(data[4]), 0)
                 self._is_on = data[5] == '1'
                 self._available = True
-                self._b_color = 0
 
         except Exception as e:
             self.debug(f"Can't update: {e}")
