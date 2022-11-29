@@ -1,0 +1,12 @@
+{
+  "domain": "gyver_lamp_gunner",
+  "name": "GyverLamp For Gunner",
+  "config_flow": true,
+  "documentation": "https://github.com/VolkovAlexander/GyverLampGunner",
+  "issue_tracker": "https://github.com/VolkovAlexander/GyverLampGunner/issues",
+  "codeowners": [ "@volandkb"],
+  "dependencies": [],
+  "requirements": [],
+  "version": "1.0.0",
+  "iot_class": "local_polling"
+}

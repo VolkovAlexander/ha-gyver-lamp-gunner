@@ -1,20 +1,16 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-DOMAIN = 'gyverlamp_gunner'
-
+DOMAIN = "gyver_lamp_gunner"
 
 async def async_setup(hass, hass_config):
-    # used only with GUI setup
     hass.data[DOMAIN] = {}
     return True
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # migrate data (after first setup) to options
     if entry.data:
-        hass.config_entries.async_update_entry(entry, data={},
-                                               options=entry.data)
+        hass.config_entries.async_update_entry(entry, data={}, options=entry.data)
 
     # add options handler
     entry.add_update_listener(async_update_options)

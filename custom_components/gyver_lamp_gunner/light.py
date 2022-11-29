@@ -1,11 +1,9 @@
 import logging
 import socket
-
-import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.light import PLATFORM_SCHEMA, LightEntity, \
-    SUPPORT_BRIGHTNESS, SUPPORT_EFFECT, SUPPORT_COLOR, SUPPORT_COLOR_TEMP, \
-    ATTR_BRIGHTNESS, ATTR_EFFECT, ATTR_HS_COLOR, ATTR_COLOR_TEMP, ATTR_COLOR_TEMP_KELVIN
+import homeassistant.helpers.config_validation as cv
+
+from homeassistant.components.light import PLATFORM_SCHEMA, SUPPORT_EFFECT, ATTR_BRIGHTNESS, ATTR_EFFECT, ATTR_RGB_COLOR, LightEntity, LightEntityFeature, ColorMode
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant
@@ -14,27 +12,19 @@ from . import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-CONF_EFFECTS = 'effects'
-
-EFFECTS = ['Белый свет', 'Цает', 'Смена цвета']
-
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
-    vol.Optional(CONF_NAME): cv.string,
-    vol.Optional(CONF_EFFECTS): cv.ensure_list
+    vol.Optional(CONF_NAME): cv.string
 })
-
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     add_entities([GyverLampGunner(config)], True)
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     entity = GyverLampGunner(entry.options, entry.entry_id)
     async_add_entities([entity], True)
 
     hass.data[DOMAIN][entry.entry_id] = entity
-
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN].pop(entry.entry_id)
@@ -88,13 +78,14 @@ class GyverLampGunner(LightEntity):
     _effect = None
     _effects = None
     _host = None
-    _color_temp = None
     _is_on = None
+    _r_color = None
+    _g_color = None
+    _b_color = None
 
     def __init__(self, config: dict, unique_id=None):
         self._name = config.get(CONF_NAME, "Gyver Lamp")
         self._unique_id = config[CONF_HOST] + "_gvr_lmp"
-
         self.update_config(config)
 
     @property
@@ -114,10 +105,6 @@ class GyverLampGunner(LightEntity):
         return self._brightness
 
     @property
-    def color_temp(self):
-        return self._color_temp
-
-    @property
     def effect_list(self):
         return self._effects
 
@@ -127,7 +114,11 @@ class GyverLampGunner(LightEntity):
 
     @property
     def supported_features(self):
-        return SUPPORT_BRIGHTNESS | SUPPORT_EFFECT | SUPPORT_COLOR_TEMP
+        return SUPPORT_EFFECT
+
+    @property
+    def supported_color_modes(self):
+        return [ColorMode.ONOFF, ColorMode.BRIGHTNESS, ColorMode.RGB]
 
     @property
     def is_on(self):
@@ -138,31 +129,8 @@ class GyverLampGunner(LightEntity):
         return self._available
 
     @property
-    def max_mireds(self):
-        return 255
-
-    @property
-    def min_mireds(self):
-        return 1
-
-    @property
-    def max_color_temp_kelvin(self):
-        return 255
-
-    @property
-    def min_color_temp_kelvin(self):
-        return 1
-
-    @property
-    def device_info(self):
-        """
-        https://developers.home-assistant.io/docs/device_registry_index/
-        """
-        return {
-            'identifiers': {(DOMAIN, self._unique_id)},
-            'manufacturer': "@AlexGyver",
-            'model': "GyverLampGunner"
-        }
+    def rgb_color(self) -> tuple:
+        return self._r_color, self._g_color, self._b_color
 
     @property
     def address(self) -> tuple:
@@ -191,8 +159,11 @@ class GyverLampGunner(LightEntity):
         if ATTR_BRIGHTNESS in kwargs:
             payload.append('BRI %d' % kwargs[ATTR_BRIGHTNESS])
 
-        if ATTR_COLOR_TEMP_KELVIN in kwargs:
-            payload.append('SPD %d' % kwargs[ATTR_COLOR_TEMP])
+        if ATTR_RGB_COLOR in kwargs:
+            speed = kwargs[ATTR_RGB_COLOR][0]
+            payload.append('SPD%d' % speed)
+            scale = kwargs[ATTR_RGB_COLOR][1]
+            payload.append('SCA%d' % scale)
 
         if not self.is_on:
             payload.append('P_ON')
@@ -214,9 +185,11 @@ class GyverLampGunner(LightEntity):
                 i = int(data[1])
                 self._effect = self._effects[i] if i < len(self._effects) else None
                 self._brightness = int(data[2])
-                self._color_temp = int(data[3])
+                self._r_color = int(data[3])
+                self._g_color = int(data[4])
                 self._is_on = data[5] == '1'
                 self._available = True
+                self._b_color = 0
 
         except Exception as e:
             self.debug(f"Can't update: {e}")
